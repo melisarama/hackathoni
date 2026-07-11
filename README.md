@@ -32,6 +32,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
+- Redesigned the teacher's mood card as **Humori**, with large parent-reported emoji, date, parent comment and arrows for browsing recorded previous days.
 - Made **Notimi** a dedicated teacher view with a NOTIMI headline, chapters and grade-entry controls, plus a return action to Nxënësit.
 - Streamlined **Nxënësit** by removing the pupil-work title, voice help, subject chooser, in-class mood selector and mood-linked resource suggestion. Added a **Notimi** access card for chapters and grade entry.
 - Reordered **Sot** so the selected pupil's short profile appears first, followed by the daily mood notice.
