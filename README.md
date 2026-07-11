@@ -32,6 +32,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
+- Updated the teacher's large mood display to use the same Twemoji icons as the parent mood selection.
 - Redesigned the parent's daily mood entry as separate mood and comment cards, with a non-scrolling grid of mood icons sourced from Twemoji's CDN.
 - Redesigned the teacher's mood card as **Humori**, with large parent-reported emoji, date, parent comment and arrows for browsing recorded previous days.
 - Made **Notimi** a dedicated teacher view with a NOTIMI headline, chapters and grade-entry controls, plus a return action to Nxënësit.
