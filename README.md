@@ -32,6 +32,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
+- Expanded pupil learning preferences with reading, listening, movement and collaboration; resource suggestions and support methods now adapt to the selected preference as well as the daily mood.
 - Simplified the teacher's **Sot** view by moving the pupil-work title, support/individual-plan history, chapters and grade entry to **Nxënësit**.
 - Kept **Lëndët** inside the parent's results view, with a **Shiko më shumë** control that expands the 12-subject average list.
 - Moved **Humori sot** to the first position in the teacher's selected-pupil work view.
