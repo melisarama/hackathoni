@@ -81,7 +81,7 @@
     .phone:not(.support-active) #supportPanel { display:none; }
     .phone.support-active .compact-hidden { display:none; }
     .phone.support-active #supportPanel { display:grid; }
-    .phone.support-active #supportPanel ~ * { display:none !important; }
+    .phone.support-active main > :not(#supportPanel) { display:none !important; }
     .phone:not(.support-active) header .profile { display:none; }
     .phone.support-active header .profile { display:flex; }
     .phone:not(.support-active) #registry { display:grid; order:-3; }

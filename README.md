@@ -32,6 +32,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
+- Reduced **Mbështetja** to the pedagogical assistant alone, hiding the preference and result sections as well.
 - Restricted **Mbështetja** to the contextual content up to the pedagogical assistant, hiding all later page sections.
 - Updated the teacher's large mood display to use the same Twemoji icons as the parent mood selection.
 - Redesigned the parent's daily mood entry as separate mood and comment cards, with a non-scrolling grid of mood icons sourced from Twemoji's CDN.
