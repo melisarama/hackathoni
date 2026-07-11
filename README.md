@@ -16,7 +16,7 @@ Open [http://localhost:8080](http://localhost:8080).
 
 ### Test on a phone
 
-Connect the phone and computer to the same Wi-Fi, then run the script above. It prints a local network URL such as `http://192.168.1.25:8080/`; open that address on the phone. If Windows asks, allow PowerShell access on **Private networks** only.
+Connect the phone and computer to the same Wi-Fi, then run the script above. In a second PowerShell window, run `ipconfig | findstr /i "IPv4"`; open the matching Wi-Fi address with port 8080 on the phone, for example `http://192.168.1.25:8080/`. If Windows asks, allow PowerShell access on **Private networks** only.
 
 ## Included in the prototype
 
