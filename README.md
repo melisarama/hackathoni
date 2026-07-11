@@ -32,7 +32,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
-- Updated the teacher's **Sot** flow: sign-in now opens only the pupil registry, and selecting a pupil opens their information view.
+- Updated the teacher's **Sot** flow: sign-in now opens only the pupil registry, and selecting a pupil opens a separate pupil-work view without the registry, with a return button.
 - Connected the prototype to its Supabase project using the browser-safe publishable key and added a visible connection-status check. The initial schema now includes subject, teacher, pupil, support-profile, chapter, grade and daily-mood tables protected by RLS.
 - Added a teacher sign-in form for first name, last name, assigned subject and a prototype 10-digit personal ID. The teacher dashboard now displays only the selected subject.
 - Added a top-level back arrow in the teacher dashboard to return to the access-choice screen.
