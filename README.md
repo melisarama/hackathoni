@@ -32,6 +32,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
+- Streamlined **Nxënësit** by removing the pupil-work title, voice help, subject chooser, in-class mood selector and mood-linked resource suggestion. Added a collapsible **Notimi** card for chapters and grade entry.
 - Reordered **Sot** so the selected pupil's short profile appears first, followed by the daily mood notice.
 - Expanded pupil learning preferences with reading, listening, movement and collaboration; resource suggestions and support methods now adapt to the selected preference as well as the daily mood.
 - Simplified the teacher's **Sot** view by moving the pupil-work title, support/individual-plan history, chapters and grade entry to **Nxënësit**.
