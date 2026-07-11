@@ -14,6 +14,10 @@ powershell -ExecutionPolicy Bypass -File .\start-localhost.ps1
 
 Open [http://localhost:8080](http://localhost:8080).
 
+### Test on a phone
+
+Connect the phone and computer to the same Wi-Fi, then run the script above. It prints a local network URL such as `http://192.168.1.25:8080/`; open that address on the phone. If Windows asks, allow PowerShell access on **Private networks** only.
+
 ## Included in the prototype
 
 - Pupil profiles, learning preferences, and protected support history.
@@ -35,6 +39,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 - Reordered **Sot** so the pupil registry appears first, followed by the selected pupil’s profile and parent-provided mood notice.
 - Updated **Humori sot** to display and edit only the currently selected pupil’s parent notification.
 - Linked the in-class mood prompt to the selected pupil and their parent-provided daily mood.
+- Enabled local Wi-Fi testing by having the development server listen on the computer’s active IPv4 address.
 - Audited and strengthened text colours to meet WCAG 2.1 AA contrast requirements for normal-sized text.
 - Added **Humori ditor**, where parent-provided mood and brief daily comments can be reviewed for every pupil.
 - Restored the full teaching workflow for the **Sot** and **Nxënësit** views.
