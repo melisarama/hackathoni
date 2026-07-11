@@ -32,6 +32,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
+- Simplified the teacher's **Sot** view by moving the pupil-work title, support/individual-plan history, chapters and grade entry to **Nxënësit**.
 - Kept **Lëndët** inside the parent's results view, with a **Shiko më shumë** control that expands the 12-subject average list.
 - Moved **Humori sot** to the first position in the teacher's selected-pupil work view.
 - Added Supabase Auth sign-in for the seeded teacher and parent accounts. The teacher dashboard now reads its assigned subject, pupil, support profile, chapters, grades and daily mood from Supabase; parent mood updates are saved to Supabase.
