@@ -1,4 +1,4 @@
-# Mësim i Qartë
+# Vlerësimi i Nxënësit
 
 Mobile-first prototype for teachers to track learning progress and receive accessibility-aware support for individual pupils.
 
@@ -32,6 +32,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
+- Added a parent entry flow that requires a selected pupil and a prototype personal-ID verification step; production use requires secure server-side authentication.
 - Added a role-selection entry screen: teachers open the existing dashboard, while parents enter a placeholder area for the next phase.
 - Replaced **Sugjerime** with **Vlerësimi përfundimtar**, including a folder for each pupil and continuous-assessment summary.
 - Moved **Humori ditor** to the first navigation position and refreshed the navigation with larger, more prominent icons.
