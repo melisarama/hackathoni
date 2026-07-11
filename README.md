@@ -28,6 +28,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
+- Added **Humori ditor**, where parent-provided mood and brief daily comments can be reviewed for every pupil.
 - Restored the full teaching workflow for the **Sot** and **Nxënësit** views.
 - Kept **Mbështetja** focused on the pupil profile, current result and pedagogical AI assistant.
 - Added a current-result summary that highlights chapters below target and proposes profile-aware support methods.
