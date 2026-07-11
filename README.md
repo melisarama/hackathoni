@@ -32,6 +32,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
+- Redesigned the parent sign-in screen with a premium lavender-and-seafoam glass treatment, a satin-gold P emblem, modern fields and a password-visibility control.
 - Redesigned the teacher sign-in screen with a premium lavender-and-blue glass treatment, a raised M emblem, modern input fields, and a password-visibility control.
 - Redesigned the access-selection screen with a premium pastel-glass presentation, stronger type hierarchy, a floating rounded panel, custom teacher and parent SVG icons, and an accessible purple hover/focus treatment.
 - Updated chapter grading so new grades are combined with prior grades and each chapter displays its calculated average.
