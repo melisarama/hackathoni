@@ -31,6 +31,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 - Moved **Humori ditor** to the first navigation position and refreshed the navigation with larger, more prominent icons.
 - Added distinct pastel colours for each navigation icon to improve scanability.
 - Integrated the parent mood update into the **Sot** view as **Humori sot**, rather than a separate navigation item.
+- Reordered **Sot** so the pupil registry appears first, followed by the selected pupil’s profile and parent-provided mood notice.
 - Audited and strengthened text colours to meet WCAG 2.1 AA contrast requirements for normal-sized text.
 - Added **Humori ditor**, where parent-provided mood and brief daily comments can be reviewed for every pupil.
 - Restored the full teaching workflow for the **Sot** and **Nxënësit** views.
