@@ -32,7 +32,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
-- Added clearly visible previous/next arrows at the top of the teacher dashboard to move between Today, Pupils, Support and Final Assessment.
+- Added a top-level back arrow in the teacher dashboard to return to the access-choice screen.
 - Added a parent entry flow that requires a selected pupil and a prototype personal-ID verification step; production use requires secure server-side authentication.
 - Added a role-selection entry screen: teachers open the existing dashboard, while parents enter a placeholder area for the next phase.
 - Replaced **Sugjerime** with **Vlerësimi përfundimtar**, including a folder for each pupil and continuous-assessment summary.
