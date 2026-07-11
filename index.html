@@ -107,8 +107,10 @@
     .grade-fields { display:grid; grid-template-columns:1fr 80px; gap:10px; }
     input,select { width:100%; min-height:39px; padding:7px 9px; border:1px solid var(--line); border-radius:10px; color:var(--ink); background:white; }
     nav { display:grid; grid-template-columns:repeat(5,1fr); border-top:1px solid var(--line); }
-    nav button { display:grid; justify-items:center; gap:3px; padding:11px 2px; border:0; color:var(--muted); background:transparent; font-size:11px; }
+    nav button { display:grid; justify-items:center; gap:4px; padding:10px 2px; border:0; color:var(--muted); background:transparent; font-size:11px; font-weight:650; }
+    nav button .nav-icon { width:34px; height:30px; display:grid; place-items:center; border-radius:11px; color:var(--ink); background:var(--lav); font-size:20px; line-height:1; }
     nav button.active { color:var(--violet); font-weight:750; }
+    nav button.active .nav-icon { color:white; background:linear-gradient(135deg,var(--violet),#8c7bdf); box-shadow:0 5px 12px rgba(107,91,199,.28); }
     @media (max-width:380px) { .app { padding:0; } .phone { min-height:100vh; border-radius:0; } }
   </style>
 </head>
@@ -131,7 +133,7 @@
       <section class="card compact-hidden"><div class="section-head" style="padding:15px 15px 0"><h2>Kapitujt e lëndës</h2><span class="small muted">Objektivi 4,0</span></div><div class="chapters" id="chapters"></div><div class="chapter-tools"><button class="btn" id="showChapter">＋ Shto kapitull</button><div class="chapter-form" id="chapterForm"><input id="newChapter" placeholder="Emri i kapitullit" aria-label="Emri i kapitullit"><button class="btn primary" id="addChapter">Ruaj</button></div></div></section>
       <section class="compact-hidden"><button class="btn" style="width:100%" id="showGrade">＋ Regjistro një notë</button><div class="card grade-panel" id="gradePanel"><div class="section-head"><h2>Shto notë</h2><button class="btn" id="closeGrade">Mbyll</button></div><div class="grade-fields"><label>Kapitulli<select id="chapter"><option>Thyesat</option><option>Probleme me fjalë</option><option>Gjeometria</option></select></label><label>Nota<input id="grade" type="number" min="1" max="5" step="0.5" value="4"></label></div><button class="btn primary" id="saveGrade">Ruaj notën</button></div></section>
     </main>
-    <nav><button class="active" id="todayToggle">⌂<span>Sot</span></button><button id="registryToggle">▣<span>Nxënësit</span></button><button id="supportToggle">♡<span>Mbështetja</span></button><button>✦<span>Sugjerime</span></button><button id="moodToggle">☀<span>Humori ditor</span></button></nav>
+    <nav><button id="moodToggle"><span class="nav-icon">☀</span><span>Humori ditor</span></button><button class="active" id="todayToggle"><span class="nav-icon">⌂</span><span>Sot</span></button><button id="registryToggle"><span class="nav-icon">▣</span><span>Nxënësit</span></button><button id="supportToggle"><span class="nav-icon">♡</span><span>Mbështetja</span></button><button><span class="nav-icon">✦</span><span>Sugjerime</span></button></nav>
   </div></div>
   <script>
     const subjects = ['Matematikë','Gjuhë shqipe','Anglisht','Shkencat natyrore','Shoqëria dhe mjedisi','TIK','Art figurativ','Edukatë muzikore','Edukatë fizike','Aftësi për jetë','Histori','Gjeografi'];

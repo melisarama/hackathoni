@@ -28,6 +28,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
+- Moved **Humori ditor** to the first navigation position and refreshed the navigation with larger, more prominent icons.
 - Added **Humori ditor**, where parent-provided mood and brief daily comments can be reviewed for every pupil.
 - Restored the full teaching workflow for the **Sot** and **Nxënësit** views.
 - Kept **Mbështetja** focused on the pupil profile, current result and pedagogical AI assistant.
