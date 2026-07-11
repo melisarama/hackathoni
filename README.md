@@ -32,6 +32,8 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
+- Added Supabase Auth sign-in for the seeded teacher and parent accounts. The teacher dashboard now reads its assigned subject, pupil, support profile, chapters, grades and daily mood from Supabase; parent mood updates are saved to Supabase.
+- Replaced the local server script with a localhost-only version for more reliable browser testing.
 - Redesigned the parent area with bottom navigation for **Sot** (daily mood, optional comment and saved history) and **Rezultati** (average and recent chapters). Teachers now see the parent’s daily mood and comment as read-only information for the selected pupil.
 - Updated the teacher's **Sot** flow: sign-in now opens only the pupil registry, and selecting a pupil opens a separate pupil-work view without the registry, with a return button.
 - Connected the prototype to its Supabase project using the browser-safe publishable key and added a visible connection-status check. The initial schema now includes subject, teacher, pupil, support-profile, chapter, grade and daily-mood tables protected by RLS.
