@@ -32,7 +32,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
-- Added a **Lëndët** section to the parent's results view, showing the pupil's average grade for every assessed subject.
+- Added a separate **Lëndët** page in the parent's bottom navigation, listing all 12 subjects and the pupil's average where grades exist.
 - Moved **Humori sot** to the first position in the teacher's selected-pupil work view.
 - Added Supabase Auth sign-in for the seeded teacher and parent accounts. The teacher dashboard now reads its assigned subject, pupil, support profile, chapters, grades and daily mood from Supabase; parent mood updates are saved to Supabase.
 - Replaced the local server script with a localhost-only version for more reliable browser testing.
