@@ -11,6 +11,12 @@
     button,input,select { font:inherit; }
     button { cursor:pointer; }
     .app { min-height:100vh; display:grid; place-items:center; padding:28px 16px; }
+    .role-gate { min-height:100vh; display:grid; place-items:center; padding:24px; background:linear-gradient(135deg,var(--lav),var(--blue),var(--mint)); }
+    .role-card { width:min(100%,430px); padding:26px; border:1px solid var(--line); border-radius:24px; background:var(--white); text-align:center; }
+    .role-options { display:grid; gap:10px; margin-top:20px; }
+    .role-option { padding:16px; border:1px solid var(--line); border-radius:16px; background:var(--paper); color:var(--ink); text-align:left; }
+    .role-option strong,.role-option span { display:block; } .role-option span { margin-top:3px; color:var(--muted); font-size:13px; }
+    .hidden { display:none !important; }
     .phone { width:min(100%,430px); overflow:hidden; border:1px solid rgba(255,255,255,.7); border-radius:30px; background:var(--paper); box-shadow:0 20px 50px rgba(78,89,129,.2); }
     header { padding:18px 20px 21px; background:linear-gradient(125deg,#ddd5ff,#e2efff); }
     .top,.section-head,.profile,.resource-top,.student-row { display:flex; align-items:center; }
@@ -129,7 +135,9 @@
   </style>
 </head>
 <body>
-  <div class="app"><div class="phone" id="appPhone">
+  <section class="role-gate" id="roleGate"><div class="role-card"><div class="avatar" style="margin:auto">MQ</div><h1 style="margin-top:14px">Mësim i Qartë</h1><p class="muted">Zgjidhni mënyrën e qasjes</p><div class="role-options"><button class="role-option" id="teacherRole"><strong>👩‍🏫 Mësimdhënës</strong><span>Hap panelin për ndjekjen dhe vlerësimin e nxënësve.</span></button><button class="role-option" id="parentRole"><strong>👨‍👩‍👧 Prind</strong><span>Hap hapësirën e prindit për njoftime ditore.</span></button></div></div></section>
+  <section class="role-gate hidden" id="parentPage"><div class="role-card"><div class="avatar" style="margin:auto">P</div><h1 style="margin-top:14px">Hapësira e prindit</h1><p class="muted">Kjo faqe do të ndërtohet në hapin tjetër.</p><button class="btn primary" id="backToRoles">Kthehu</button></div></section>
+  <div class="app hidden" id="teacherApp"><div class="phone" id="appPhone">
     <header><div class="top"><div class="brand">Mësim i Qartë</div><span class="protected">🛡️ Profil i mbrojtur</span></div><div class="profile"><div class="avatar">EK</div><div><h1>Era Kola</h1><p class="small muted" id="profileSubtitle">Klasa V-A · Plan individual aktiv</p></div></div></header>
     <main>
       <section class="compact-hidden"><div class="section-head"><h2>Ndihmë me zë</h2><span class="small muted" id="voiceStatus">Gati për lexim</span></div><div class="voice"><button class="btn primary" id="readPage">🔊 Lexo këtë faqe</button><button class="btn" id="stopReading">■ Ndalo</button></div></section>
@@ -152,6 +160,9 @@
     <nav><button class="nav-today active" id="todayToggle"><span class="nav-icon">⌂</span><span>Sot</span></button><button class="nav-students" id="registryToggle"><span class="nav-icon">▣</span><span>Nxënësit</span></button><button class="nav-support" id="supportToggle"><span class="nav-icon">♡</span><span>Mbështetja</span></button><button class="nav-suggestions" id="evaluationToggle"><span class="nav-icon">✦</span><span>Vlerësimi përfundimtar</span></button></nav>
   </div></div>
   <script>
+    document.getElementById('teacherRole').onclick=()=>{ document.getElementById('roleGate').classList.add('hidden'); document.getElementById('teacherApp').classList.remove('hidden'); };
+    document.getElementById('parentRole').onclick=()=>{ document.getElementById('roleGate').classList.add('hidden'); document.getElementById('parentPage').classList.remove('hidden'); };
+    document.getElementById('backToRoles').onclick=()=>{ document.getElementById('parentPage').classList.add('hidden'); document.getElementById('roleGate').classList.remove('hidden'); };
     const subjects = ['Matematikë','Gjuhë shqipe','Anglisht','Shkencat natyrore','Shoqëria dhe mjedisi','TIK','Art figurativ','Edukatë muzikore','Edukatë fizike','Aftësi për jetë','Histori','Gjeografi'];
     const scores = { 'Matematikë':['3,8','2 kapituj kërkojnë mbështetje'],'Gjuhë shqipe':['4,2','Në objektivin e pritur'],'Anglisht':['3,9','Përforco fjalorin'],'Shkencat natyrore':['4,1','Në objektivin e pritur'],'Shoqëria dhe mjedisi':['4,0','Në objektivin e pritur'],'TIK':['4,5','Pikë e fortë'],'Art figurativ':['4,8','Pikë e fortë'],'Edukatë muzikore':['3,4','Udhëzime të lexueshme me zë'],'Edukatë fizike':['4,0','Në objektivin e pritur'],'Aftësi për jetë':['4,3','Në objektivin e pritur'],'Histori':['3,7','Përdor përshkrime me zë'],'Gjeografi':['3,9','Përforco drejtimet me përshkrime'] };
     const preferences = { writing:['Shkrim','Sugjerimet përfshijnë përgjigje të shkruara dhe fletë pune.','Fletë pune e shkruar: Thyesat','Ushtrime të shkruara me tekst të madh, që lexohen me zë sipas nevojës.'], drawing:['Vizatim','Sugjerimet përfshijnë skica, ngjyra dhe paraqitje vizuale.','Vizato thyesat','Krijo modele me forma dhe ngjyra; çdo hap shpjegohet edhe me zë.'], practice:['Praktikë','Sugjerimet përfshijnë detyra të shkurtra dhe prova praktike.','Mini-sfidë praktike: Thyesat','Tre ushtrime të shkurtra me objekte të përditshme dhe udhëzime me zë.'] };

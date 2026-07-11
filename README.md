@@ -32,6 +32,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
+- Added a role-selection entry screen: teachers open the existing dashboard, while parents enter a placeholder area for the next phase.
 - Replaced **Sugjerime** with **Vlerësimi përfundimtar**, including a folder for each pupil and continuous-assessment summary.
 - Moved **Humori ditor** to the first navigation position and refreshed the navigation with larger, more prominent icons.
 - Added distinct pastel colours for each navigation icon to improve scanability.
