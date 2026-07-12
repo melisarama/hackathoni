@@ -1,33 +1,131 @@
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
-$port = 8080
+$port = if ($env:PORT) { [int]$env:PORT } else { 8080 }
 $htmlPath = Join-Path $root 'index.html'
 $piaPath = Join-Path $root 'plani_individual_i_arsimit.pdf'
 $listener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Any, $port)
+$utf8 = [System.Text.UTF8Encoding]::new($false)
+
+function Send-Response {
+    param($Stream, [int]$Status, [string]$StatusText, [string]$ContentType, [byte[]]$Body)
+    $header = "HTTP/1.1 $Status $StatusText`r`nContent-Type: $ContentType`r`nContent-Length: $($Body.Length)`r`nCache-Control: no-store`r`nConnection: close`r`n`r`n"
+    $headerBytes = [System.Text.Encoding]::ASCII.GetBytes($header)
+    $Stream.Write($headerBytes, 0, $headerBytes.Length)
+    $Stream.Write($Body, 0, $Body.Length)
+    $Stream.Flush()
+}
+
+function Send-Json {
+    param($Stream, [int]$Status, [hashtable]$Data)
+    $statusText = if ($Status -eq 200) { 'OK' } elseif ($Status -eq 400) { 'Bad Request' } elseif ($Status -eq 503) { 'Service Unavailable' } else { 'Internal Server Error' }
+    $bytes = $utf8.GetBytes(($Data | ConvertTo-Json -Depth 6 -Compress))
+    Send-Response $Stream $Status $statusText 'application/json; charset=utf-8' $bytes
+}
+
+function Get-SupportReply {
+    param([string]$Message)
+    if ([string]::IsNullOrWhiteSpace($env:OPENAI_API_KEY)) { throw 'OPENAI_API_KEY_MISSING' }
+
+    $model = if ([string]::IsNullOrWhiteSpace($env:OPENAI_MODEL)) { 'gpt-5.6' } else { $env:OPENAI_MODEL.Trim() }
+    $instructions = @'
+Ti je një asistent pedagogjik në kohë reale për mësimdhënës në Kosovë. Përgjigju vetëm në shqip, qartë dhe shkurt, duke u bazuar drejtpërdrejt në situatën e fundit të shkruar nga mësimdhënësi.
+
+Jep hapa që mësimdhënësi mund t'i zbatojë menjëherë në klasë. Mos vendos diagnoza, mos e fajëso fëmijën dhe mos paraqit një shkak si të sigurt. Përmend shkurt shkaqe të mundshme vetëm kur ndihmon, si mbingarkesa shqisore, frustrimi, lodhja, vështirësia me detyrën ose nevoja për komunikim.
+
+Përdor këtë format:
+1. Një ose dy fjali të lidhura vetëm me sjelljen e përshkruar dhe shkaqet e mundshme.
+2. Titulli "Çfarë të bëni tani:" dhe saktësisht 3 hapa konkretë me pika. Jep edhe fjalë të sakta që mësimdhënësi mund t'i thotë kur kjo ndihmon.
+3. Një fjali shumë të shkurtër për çfarë të vëzhgohet më pas.
+
+Mos përdor hyrje të përgjithshme, mos përsërit modele të gatshme dhe mos kërko të dhëna personale ose mjekësore. Nëse ka rrezik të menjëhershëm, dhunë, vetëlëndim ose rrezik për të tjerët, udhëzo fillimisht sigurimin e fëmijës, aktivizimin e protokollit të mbrojtjes së shkollës dhe kontaktimin e shërbimeve emergjente lokale. Këshilla nuk zëvendëson profesionistët ose procedurat e shkollës.
+'@
+    $requestJson = @{
+        model = $model
+        reasoning = @{ effort = 'low' }
+        instructions = $instructions
+        input = $Message
+        max_output_tokens = 500
+        store = $false
+    } | ConvertTo-Json -Depth 6
+    $headers = @{ Authorization = "Bearer $($env:OPENAI_API_KEY)"; 'Content-Type' = 'application/json' }
+    $response = Invoke-RestMethod -Method Post -Uri 'https://api.openai.com/v1/responses' -Headers $headers -Body $utf8.GetBytes($requestJson) -TimeoutSec 60
+
+    $parts = @()
+    foreach ($item in @($response.output)) {
+        foreach ($content in @($item.content)) {
+            if ($content.type -eq 'output_text' -and $content.text) { $parts += [string]$content.text }
+        }
+    }
+    $reply = ($parts -join "`n").Trim()
+    if (-not $reply) { throw 'OpenAI nuk ktheu tekst.' }
+    return $reply
+}
 
 try {
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
     $listener.Start()
     Write-Host "Local server is running at http://localhost:$port/"
+    if ([string]::IsNullOrWhiteSpace($env:OPENAI_API_KEY)) {
+        Write-Warning 'AI support is not configured. Set OPENAI_API_KEY and restart this server.'
+    } else {
+        Write-Host 'AI support is configured for Mbeshtetja.'
+    }
+
     while ($true) {
+        if (-not $listener.Pending()) {
+            Start-Sleep -Milliseconds 40
+            continue
+        }
         $client = $listener.AcceptTcpClient()
+        $reader = $null
         try {
             $stream = $client.GetStream()
-            $buffer = New-Object byte[] 4096
-            $read = $stream.Read($buffer, 0, $buffer.Length)
-            $request = [System.Text.Encoding]::ASCII.GetString($buffer, 0, $read)
-            $requestPath = ($request -split "`r?`n")[0].Split(' ')[1]
-            if ($requestPath -like '/plani_individual_i_arsimit.pdf*' -and (Test-Path -LiteralPath $piaPath)) {
-                $body = [System.IO.File]::ReadAllBytes($piaPath)
-                $contentType = 'application/pdf'
-            } else {
-                $body = [System.IO.File]::ReadAllBytes($htmlPath)
-                $contentType = 'text/html; charset=utf-8'
+            $stream.ReadTimeout = 15000
+            $reader = [System.IO.StreamReader]::new($stream, $utf8, $false, 4096, $true)
+            $requestLine = $reader.ReadLine()
+            if (-not $requestLine) { continue }
+            $requestParts = $requestLine -split ' '
+            $method = $requestParts[0].ToUpperInvariant()
+            $path = ($requestParts[1] -split '\?')[0]
+            $contentLength = 0
+            while ($true) {
+                $line = $reader.ReadLine()
+                if ([string]::IsNullOrEmpty($line)) { break }
+                if ($line -match '^Content-Length:\s*(\d+)') { $contentLength = [int]$Matches[1] }
             }
-            $header = "HTTP/1.1 200 OK`r`nContent-Type: $contentType`r`nContent-Length: $($body.Length)`r`nConnection: close`r`n`r`n"
-            $headerBytes = [System.Text.Encoding]::ASCII.GetBytes($header)
-            $stream.Write($headerBytes, 0, $headerBytes.Length)
-            $stream.Write($body, 0, $body.Length)
-            $stream.Flush()
+
+            if ($method -eq 'POST' -and $path -eq '/api/support') {
+                try {
+                    $chars = New-Object char[] $contentLength
+                    $offset = 0
+                    while ($offset -lt $contentLength) {
+                        $count = $reader.Read($chars, $offset, $contentLength - $offset)
+                        if ($count -le 0) { break }
+                        $offset += $count
+                    }
+                    $payload = (-join $chars[0..([Math]::Max(0, $offset - 1))]) | ConvertFrom-Json
+                    $message = $utf8.GetString([Convert]::FromBase64String([string]$payload.messageBase64))
+                    if ([string]::IsNullOrWhiteSpace($message) -or $message.Length -gt 2000) {
+                        Send-Json $stream 400 @{ error = 'Shkruani një situatë me më pak se 2000 shkronja.' }
+                    } else {
+                        Send-Json $stream 200 @{ reply = (Get-SupportReply $message.Trim()) }
+                    }
+                } catch {
+                    if ($_.Exception.Message -eq 'OPENAI_API_KEY_MISSING') {
+                        Send-Json $stream 503 @{ error = 'AI nuk është konfiguruar. Vendosni OPENAI_API_KEY në PowerShell dhe rinisni serverin.' }
+                    } else {
+                        Write-Warning "AI request failed: $($_.Exception.Message)"
+                        Send-Json $stream 503 @{ error = 'Asistenti AI nuk mundi të përgjigjet tani. Kontrolloni lidhjen dhe çelësin API.' }
+                    }
+                }
+            } elseif ($method -eq 'GET' -and $path -eq '/plani_individual_i_arsimit.pdf' -and (Test-Path $piaPath)) {
+                Send-Response $stream 200 'OK' 'application/pdf' ([System.IO.File]::ReadAllBytes($piaPath))
+            } else {
+                Send-Response $stream 200 'OK' 'text/html; charset=utf-8' ([System.IO.File]::ReadAllBytes($htmlPath))
+            }
+        } catch {
+            Write-Warning "Request failed: $($_.Exception.Message)"
         } finally {
+            if ($reader) { $reader.Dispose() }
             $client.Close()
         }
     }

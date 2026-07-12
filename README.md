@@ -8,11 +8,18 @@ Mësim i Qartë helps teachers follow each pupil’s learning outcomes over time
 
 ## Run locally
 
+The **Mbështetja** assistant uses the OpenAI Responses API through the local PowerShell server. Set the API key only in the PowerShell window that starts the app; never add it to `index.html` or commit it to Git.
+
 ```powershell
+$env:OPENAI_API_KEY="your-openai-api-key"
 powershell -ExecutionPolicy Bypass -File .\start-localhost.ps1
 ```
 
 Open [http://localhost:8080](http://localhost:8080).
+
+The server uses `gpt-5.6` by default. To test another available model, set `$env:OPENAI_MODEL="model-name"` before starting the server. If the server was already running, stop it with `Ctrl+C` and start it again after setting the environment variable.
+
+Only the situation typed in **Mbështetja** is sent to the AI endpoint. Do not include a pupil's name, personal number, medical record, or other identifying information. For production, move the endpoint to an authenticated backend or Supabase Edge Function and complete the required child-privacy, retention, monitoring, and escalation review.
 
 ### Test on a phone
 
@@ -29,6 +36,12 @@ Connect the phone and computer to the same Wi-Fi, then run the script above. In 
 The prototype keeps its demonstration data in the browser’s local storage.
 
 ## Change log
+
+### 2026-07-12
+
+- Connected only the teacher's **Mbështetja** chat to the OpenAI Responses API. Each **Dërgo** action now generates a new Albanian response from the teacher's exact situation, with possible causes, three immediate classroom actions and a short observation cue.
+- Added a server-side API proxy so the OpenAI key stays in PowerShell rather than being exposed in the browser, plus loading, error and retry-ready states in the chat.
+- Limited the AI request to the text typed in **Mbështetja** and documented privacy precautions for pupil data.
 
 ### 2026-07-11
 
