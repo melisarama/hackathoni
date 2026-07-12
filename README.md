@@ -32,6 +32,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
+- Added a premium responsive teacher selected-pupil dashboard: a mint-to-peach glass layout becomes a two-column view on larger screens, with a fixed bottom navigation, mood history control, learning preferences and readable result-progress cards.
 - Reworked the parent's **Historiku** into a slide-in monthly mood history panel with emoji calendar cells for reported moods and date numbers for days without a report, date-stamped parent comments and a close control; the parent bottom navigation now remains fixed while the page scrolls.
 - Redesigned the parent sign-in screen with a premium lavender-and-seafoam glass treatment, a satin-gold P emblem, modern fields and a password-visibility control.
 - Redesigned the teacher sign-in screen with a premium lavender-and-blue glass treatment, a raised M emblem, modern input fields, and a password-visibility control.
