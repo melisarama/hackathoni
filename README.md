@@ -32,6 +32,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
+- Refreshed the parent **Rezultati** view with matching pastel result cards and added a subject-by-subject progress card showing visual rise/support indicators and progress tracks.
 - Simplified the teacher's **Sot** view by removing the voice-help controls, automated notice, current-result card, resource card and current-task card; those teaching details remain available in their relevant sections.
 - Added Era Kola's supplied, cropped PIA PDF to the app. Selecting the PIA card opens only the saved document pages, while the objective, adaptation and progress-measurement values remain blank until they are completed from the plan.
 - Redesigned **Vlerësimi përfundimtar** folders to open a dedicated pupil analytics view, removing the empty selection slot. Each view includes a scannable PIA card and a subject report for the logged-in teacher with a line chart and topic-level indicators.
