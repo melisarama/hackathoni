@@ -40,6 +40,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 - Added direct recognition of task-completion frustration, with classroom actions for task chunking, a nearby worked example and supported first-step validation.
 - Reframed the pedagogical assistant as a fast classroom-reaction tool: it now asks for the immediate situation and moves straight to concrete actions rather than a supportive conversational introduction.
 - Tightened assistant replies to strip conversational lead-ins before display, keeping the immediate one-sentence behavior analysis, three micro-interventions and exactly three action tags.
+- Labeled each assistant tactic list as **Veprimi i mësimdhënësit** so the immediate classroom steps are unmistakable.
 - Redesigned **Mbështetja** as a premium pedagogical AI conversation: student identity row, assistant avatar, refined chat bubbles, visual quick prompts, microphone control and a soft-amber emergency note.
 - Made the teacher's **Historiku** open the same monthly mood calendar and comment-summary panel used in the parent portal.
 - Expanded the teacher's **Sot** experience into a holistic pupil workspace with soft mint, coral and peach surfaces, a circular result indicator, assistive support actions and an interactive current-task card with audio and start controls.
