@@ -267,6 +267,27 @@
     .track { grid-column:1/-1; height:7px; overflow:hidden; border-radius:8px; background:#e9eef4; }
     .fill { height:100%; border-radius:inherit; background:#75b7a0; }
     .fill.low { background:#dd8ca1; }
+    /* Holistic daily pupil workspace */
+    #teacherApp .phone.today-view.student-selected { background:linear-gradient(160deg,#f6fffa,#fff7f1); }
+    #teacherApp .phone.today-view.student-selected header { background:linear-gradient(125deg,#d8f0e5,#ffe8da); }
+    #teacherApp .phone.today-view.student-selected header .profile { display:flex; }
+    #teacherApp .phone.today-view.student-selected .selected-profile,#teacherApp .phone.today-view.student-selected .mood-panel,#teacherApp .phone.today-view.student-selected .preferences,#teacherApp .phone.today-view.student-selected .current-result,#teacherApp .today-extras { border:0; border-radius:22px; box-shadow:10px 10px 22px rgba(111,119,112,.12),-7px -7px 18px rgba(255,255,255,.82); }
+    #teacherApp .phone.today-view.student-selected .preferences { background:linear-gradient(145deg,#fffdf8,#fff2e8); }
+    #teacherApp .phone.today-view.student-selected .current-result { background:linear-gradient(145deg,#fbfffd,#edf8f2); }
+    #teacherApp .phone.today-view.student-selected #resultAverage { width:64px; height:64px; display:grid; place-items:center; padding:6px; border-radius:50%; color:#2e3437; background:conic-gradient(#68b9a0 0 38%,#f4a980 38% 72%,#e8edf0 72% 100%); box-shadow:inset 0 0 0 6px #f8fffb; text-align:center; font-size:11px; }
+    #teacherApp .phone.today-view.student-selected .preference { border:0; border-radius:14px; box-shadow:4px 4px 10px rgba(105,103,96,.1),-3px -3px 8px rgba(255,255,255,.85); }
+    #teacherApp .phone.today-view.student-selected .preference.active { color:#263c39; background:#d8f0e5; }
+    .today-extras { display:grid; gap:13px; padding:16px; background:linear-gradient(145deg,#fff,#fff7f1); }
+    .today-extras h2 { margin:0; }
+    .assistive-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .assistive-action { display:grid; grid-template-columns:auto 1fr; gap:8px; align-items:center; min-height:66px; padding:11px; border:0; border-radius:16px; color:#343237; background:#f6fffa; box-shadow:4px 4px 11px rgba(102,120,109,.1),-3px -3px 8px #fff; text-align:left; }
+    .assistive-action span:first-child { font-size:24px; }
+    .task-card { background:linear-gradient(135deg,#fff3ea,#fffdfa); }
+    .task-icon { width:50px; height:50px; display:grid; place-items:center; border-radius:17px; background:linear-gradient(145deg,#f49b79,#f2bd88); box-shadow:0 8px 16px rgba(209,126,97,.25); font-size:25px; }
+    .task-actions { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:12px; }
+    .task-actions .btn { min-height:49px; }
+    .task-status { min-height:18px; margin:9px 0 0; color:#43534d; font-size:12px; font-weight:650; }
+    .phone.students-view .today-extras { display:none !important; }
     .grade-panel { display:none; padding:15px; background:#f7f4ff; }
     .grade-panel.show { display:grid; gap:10px; }
     label { display:grid; gap:5px; font-size:12px; font-weight:650; }
@@ -410,6 +431,8 @@
     document.getElementById('parentHistoryToggle').onclick=()=>{ const box=document.getElementById('parentMoodHistory'); renderParentMoodHistory(); box.classList.add('show'); document.getElementById('parentHistoryToggle').setAttribute('aria-expanded','true'); };
     document.getElementById('saveParentMood').onclick=async()=>{ if(!parentActiveStudent) return; const comment=document.getElementById('parentMoodComment').value.trim(); const reportedOn=new Date().toISOString().slice(0,10); const result=await supabaseClient.from('daily_moods').upsert({student_id:parentActiveStudent.id,mood:parentSelectedMood,parent_comment:comment,reported_on:reportedOn},{onConflict:'student_id,reported_on'}); if(result.error){document.getElementById('parentMoodStatus').textContent='Njoftimi nuk u ruajt: '+result.error.message;return;} const name=parentActiveStudent.name; dailyMoods[name]={mood:parentSelectedMood,comment}; moodHistory[name]=[{date:reportedOn,mood:parentSelectedMood,comment},...(moodHistory[name]||[]).filter(entry=>entry.date!==reportedOn)]; document.getElementById('parentMoodStatus').textContent='✓ Njoftimi u ruajt në Supabase.'; renderParentMoodHistory(); };
     document.getElementById('parentLogout').onclick=async()=>{ await supabaseClient.auth.signOut(); document.getElementById('parentDashboard').classList.add('hidden'); document.getElementById('roleGate').classList.remove('hidden'); };
+    function buildTodayWorkspace(){ document.querySelector('.teacher-page-nav strong').textContent='Paneli i Nxënësit'; const main=document.querySelector('#appPhone main'); const support=document.createElement('section'); support.className='card today-extras compact-hidden'; support.id='assistiveSupport'; support.innerHTML='<div class="section-head"><div><h2>Mbështetje ndihmëse</h2><p class="small muted">Mjete të gatshme për orën e sotme.</p></div><span class="badge">Qasje</span></div><div class="assistive-actions"><button class="assistive-action" type="button" id="todayReadAloud"><span>🔊</span><span><strong>Lexo me zë</strong><small>Udhëzime audio</small></span></button><button class="assistive-action" type="button" id="todayInfo"><span>ⓘ</span><span><strong>Përshtatje</strong><small>Tekst i qartë dhe kontrast</small></span></button></div><p class="task-status" id="assistiveStatus"></p>'; const tasks=document.createElement('section'); tasks.className='card today-extras task-card compact-hidden'; tasks.id='todayTasks'; tasks.innerHTML='<div class="section-head"><div class="resource-top"><div class="task-icon">✎〰</div><div><p class="small muted">Detyra aktuale</p><h2>Lexo dhe përgjigju</h2></div></div><span class="badge">Sot</span></div><p class="small muted">Tekst i shkurtër me pyetje kuptimore, i përshtatur për preferencat e Era Kolës.</p><div class="task-actions"><button class="btn primary" id="startTodayTask">▶ Fillo</button><button class="btn" id="listenTodayTask">🔊 Dëgjo</button></div><p class="task-status" id="todayTaskStatus"></p>'; main.append(support,tasks); document.getElementById('todayReadAloud').onclick=()=>document.getElementById('assistiveStatus').textContent='Leximi me zë është gati për materialin e sotëm.'; document.getElementById('todayInfo').onclick=()=>document.getElementById('assistiveStatus').textContent='Materiali përdor tekst të qartë, kontrast të lartë dhe hapa të shkurtër.'; document.getElementById('startTodayTask').onclick=()=>document.getElementById('todayTaskStatus').textContent='Detyra u hap për Era Kolën.'; document.getElementById('listenTodayTask').onclick=()=>document.getElementById('todayTaskStatus').textContent='Po përgatitet versioni audio i detyrës.'; }
+    buildTodayWorkspace();
     renderStudents(); renderEvaluationFolders(); renderDailyMoods(); renderChapters(); updateResource();
   </script>
 </body>
