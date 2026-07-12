@@ -32,6 +32,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
+- Redesigned **Mbështetja** as a premium pedagogical AI conversation: student identity row, assistant avatar, refined chat bubbles, visual quick prompts, microphone control and a soft-amber emergency note.
 - Made the teacher's **Historiku** open the same monthly mood calendar and comment-summary panel used in the parent portal.
 - Expanded the teacher's **Sot** experience into a holistic pupil workspace with soft mint, coral and peach surfaces, a circular result indicator, assistive support actions and an interactive current-task card with audio and start controls.
 - Added a premium responsive teacher selected-pupil dashboard: a mint-to-peach glass layout keeps a single scrolling column, showing the pupil profile and mood first, followed by learning preferences and readable result-progress cards, with fixed bottom navigation and a mood-history control.
