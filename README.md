@@ -32,7 +32,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
-- Added the supplied PIA PDF to the app. Selecting Era Kola's PIA card opens the document at page 34, while the objective, adaptation and progress-measurement values remain blank until they are completed from the plan.
+- Added Era Kola's supplied, cropped PIA PDF to the app. Selecting the PIA card opens only the saved document pages, while the objective, adaptation and progress-measurement values remain blank until they are completed from the plan.
 - Redesigned **Vlerësimi përfundimtar** folders to open a dedicated pupil analytics view, removing the empty selection slot. Each view includes a scannable PIA card and a subject report for the logged-in teacher with a line chart and topic-level indicators.
 - Updated the pedagogical assistant response flow: each teacher message now starts directly from the reported behavior, varies wording between turns, provides three immediate classroom tactics and exactly three context-sensitive bracketed follow-up tags; safety-risk wording routes to the school's protection and emergency protocol.
 - Added direct recognition of task-completion frustration, with classroom actions for task chunking, a nearby worked example and supported first-step validation.
