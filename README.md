@@ -32,6 +32,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
+- Updated the pedagogical assistant response flow: each teacher message now receives a concise contextual analysis, three immediate classroom tactics and exactly three context-sensitive follow-up tags; safety-risk wording routes to the school's protection and emergency protocol.
 - Redesigned **Mbështetja** as a premium pedagogical AI conversation: student identity row, assistant avatar, refined chat bubbles, visual quick prompts, microphone control and a soft-amber emergency note.
 - Made the teacher's **Historiku** open the same monthly mood calendar and comment-summary panel used in the parent portal.
 - Expanded the teacher's **Sot** experience into a holistic pupil workspace with soft mint, coral and peach surfaces, a circular result indicator, assistive support actions and an interactive current-task card with audio and start controls.
