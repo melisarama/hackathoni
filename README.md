@@ -32,7 +32,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
-- Reworked the parent's **Historiku** into a slide-in monthly mood history panel with emoji calendar cells, date-stamped parent comments and a close control; the parent bottom navigation now remains fixed while the page scrolls.
+- Reworked the parent's **Historiku** into a slide-in monthly mood history panel with emoji calendar cells for reported moods and date numbers for days without a report, date-stamped parent comments and a close control; the parent bottom navigation now remains fixed while the page scrolls.
 - Redesigned the parent sign-in screen with a premium lavender-and-seafoam glass treatment, a satin-gold P emblem, modern fields and a password-visibility control.
 - Redesigned the teacher sign-in screen with a premium lavender-and-blue glass treatment, a raised M emblem, modern input fields, and a password-visibility control.
 - Redesigned the access-selection screen with a premium pastel-glass presentation, stronger type hierarchy, a floating rounded panel, custom teacher and parent SVG icons, and an accessible purple hover/focus treatment.
