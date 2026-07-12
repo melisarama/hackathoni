@@ -32,6 +32,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-11
 
+- Made the teacher's **Historiku** open the same monthly mood calendar and comment-summary panel used in the parent portal.
 - Expanded the teacher's **Sot** experience into a holistic pupil workspace with soft mint, coral and peach surfaces, a circular result indicator, assistive support actions and an interactive current-task card with audio and start controls.
 - Added a premium responsive teacher selected-pupil dashboard: a mint-to-peach glass layout keeps a single scrolling column, showing the pupil profile and mood first, followed by learning preferences and readable result-progress cards, with fixed bottom navigation and a mood-history control.
 - Reworked the parent's **Historiku** into a slide-in monthly mood history panel with emoji calendar cells for reported moods and date numbers for days without a report, date-stamped parent comments and a close control; the parent bottom navigation now remains fixed while the page scrolls.
