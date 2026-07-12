@@ -214,6 +214,20 @@
     .parent-nav button.active { color:white; background:linear-gradient(135deg,var(--violet),#8c7bdf); box-shadow:0 5px 12px rgba(107,91,199,.28); }
     .parent-panel { text-align:left; }
     .parent-mood-card,.parent-comment-card { padding:15px; margin-top:14px; text-align:left; }
+    .parent-comment-card > h2 { margin-bottom:5px; }
+    .parent-comment-group { display:grid; gap:9px; margin-top:13px; padding:13px; border:1px solid rgba(107,91,199,.12); border-radius:16px; background:rgba(255,255,255,.68); }
+    .parent-comment-group.targeted { background:linear-gradient(145deg,rgba(239,234,255,.8),rgba(255,248,243,.76)); }
+    .parent-comment-group h3 { margin:0; color:#30294d; font-size:14px; }
+    .parent-comment-group textarea { min-height:86px; padding:10px; resize:vertical; border:1px solid var(--line); border-radius:12px; color:var(--ink); background:#fff; font:inherit; }
+    .parent-comment-group select { margin-top:2px; }
+    .comment-audience { display:inline-flex; width:max-content; padding:4px 8px; border-radius:999px; color:#51428e; background:#eee9ff; font-size:11px; font-weight:750; }
+    .teacher-parent-comments { display:grid; gap:8px; }
+    .teacher-parent-comment { padding:11px 12px; border:1px solid rgba(107,91,199,.11); border-radius:14px; background:rgba(255,255,255,.72); text-align:left; }
+    .teacher-parent-comment.specific { background:linear-gradient(145deg,#f1edff,#fff8f2); }
+    .teacher-parent-comment strong { display:block; margin-bottom:4px; color:#443876; font-size:12px; }
+    .teacher-parent-comment p { margin:0; color:var(--muted); }
+    .history-comment-block { display:grid; gap:5px; margin-top:6px; }
+    .history-comment-block p { margin:0; }
     .parent-mood-choices { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:14px; }
     .parent-mood-choice { min-height:88px; padding:8px 4px; border:1px solid var(--line); border-radius:12px; color:var(--ink); background:var(--paper); text-align:center; }
     .parent-mood-choice img { width:34px; height:34px; display:block; margin:0 auto 5px; }
@@ -448,6 +462,24 @@
     localStorage.setItem('mlq-students', JSON.stringify(storedStudents));
     const dailyMoods = JSON.parse(localStorage.getItem('mlq-daily-moods') || '{"Era Kola":{"mood":"😌 E qetë","comment":"Ka fjetur mirë dhe është gati për ditën."},"Ardit Krasniqi":{"mood":"😟 E shqetësuar","comment":"Ka pasur një mëngjes të vështirë; ju lutem filloni me një aktivitet të qetë."}}');
     const moodHistory = JSON.parse(localStorage.getItem('mlq-mood-history') || '{}');
+    function readParentNotice(raw){
+      const fallback={general:typeof raw==='string'?raw:'',subject:'',specific:''};
+      if(!raw||typeof raw!=='string'||raw.trim()[0]!=='{') return fallback;
+      try {
+        const parsed=JSON.parse(raw);
+        if(parsed&&parsed.version===2) return {general:String(parsed.general||''),subject:String(parsed.subject||''),specific:String(parsed.specific||'')};
+      } catch(error) {}
+      return fallback;
+    }
+    function writeParentNotice(general,subject,specific){ return JSON.stringify({version:2,general:general||'',subject:specific?subject:'',specific:specific||''}); }
+    function escapeHtml(value){ return String(value||'').replace(/[&<>"]/g,character=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[character])); }
+    function noticeHistoryMarkup(raw,teacherSubject=''){
+      const notice=readParentNotice(raw);
+      const rows=[];
+      if(notice.general) rows.push('<p><strong>Për të gjithë:</strong> '+escapeHtml(notice.general)+'</p>');
+      if(notice.specific&&(!teacherSubject||notice.subject===teacherSubject)) rows.push('<p><strong>Vetëm për '+escapeHtml(notice.subject)+':</strong> '+escapeHtml(notice.specific)+'</p>');
+      return rows.join('');
+    }
     const chaptersBySubject = JSON.parse(localStorage.getItem('mlq-chapters-by-subject-v1') || '{}');
     const gradeHistoryByChapter = JSON.parse(localStorage.getItem('mlq-grade-history-by-chapter-v1') || '{}');
     let activeStudent = 0;
@@ -465,8 +497,31 @@
     function renderEvaluationFolders(){ const box=document.getElementById('evaluationFolders'); box.innerHTML=''; storedStudents.forEach(student=>{ const row=document.createElement('button'); row.className='evaluation-folder'; row.type='button'; row.innerHTML='<span class="folder-icon">📁</span><span><strong>'+student.name+'</strong><br><span class="small muted">Vlerësimi i vazhdueshëm</span></span><span class="folder-open">Klikoni për të parë më shumë</span>'; row.onclick=()=>showEvaluationAnalytics(student); box.appendChild(row); }); }
     let moodHistoryIndex=0;
     let moodHistoryStudent='';
-    function renderDailyMoods(){ const student=storedStudents[activeStudent]; if(!student) return; document.getElementById('dailyMoodTitle').textContent='Si është humori i '+student.name+' sot?'; const fallback=dailyMoods[student.name]; const entries=(moodHistory[student.name]&&moodHistory[student.name].length?moodHistory[student.name]:(fallback?[{date:'Sot',mood:fallback.mood,comment:fallback.comment}]:[])); if(moodHistoryStudent!==student.name){ moodHistoryStudent=student.name; moodHistoryIndex=0; } moodHistoryIndex=Math.max(0,Math.min(moodHistoryIndex,Math.max(0,entries.length-1))); const entry=entries[moodHistoryIndex]; const icon=entry&&parentMoodIcons[entry.mood]; document.getElementById('moodLargeEmoji').innerHTML=icon?'<img src="'+icon+'" alt="'+entry.mood+'">':(entry?entry.mood.split(' ')[0]:'—'); document.getElementById('moodDate').textContent=entry?(entry.date==='Sot'?'Sot':new Intl.DateTimeFormat('sq-AL',{dateStyle:'long'}).format(new Date(entry.date))):'Sot'; document.getElementById('moodParentComment').textContent=entry?(entry.comment||'Prindi nuk ka lënë koment shtesë.'):'Nuk ka njoftim nga prindi ende.'; document.getElementById('moodPrevious').disabled=!entries.length||moodHistoryIndex>=entries.length-1; document.getElementById('moodNext').disabled=!entries.length||moodHistoryIndex===0; }
-    function renderTeacherMoodHistory(){ const box=document.getElementById('teacherMoodHistoryList'); const student=storedStudents[activeStudent]; const entries=student?(moodHistory[student.name]||[]):[]; box.innerHTML=''; if(!entries.length){ box.innerHTML='<p class="small muted">Nuk ka njoftime të mëparshme nga prindi.</p>'; return; } entries.forEach(entry=>{ const row=document.createElement('article'); row.className='teacher-mood-history-item'; const date=entry.date==='Sot'?'Sot':new Intl.DateTimeFormat('sq-AL',{dateStyle:'medium'}).format(new Date(entry.date)); row.innerHTML='<span class="mood-history-icon">'+entry.mood.split(' ')[0]+'</span><div><strong>'+date+' · '+entry.mood.substring(entry.mood.indexOf(' ')+1)+'</strong><p class="small muted">'+(entry.comment||'Pa koment shtesë.')+'</p></div>'; box.appendChild(row); }); }
+    function renderDailyMoods(){
+      const student=storedStudents[activeStudent];
+      if(!student) return;
+      document.getElementById('dailyMoodTitle').textContent='Si është humori i '+student.name+' sot?';
+      const fallback=dailyMoods[student.name];
+      const entries=(moodHistory[student.name]&&moodHistory[student.name].length?moodHistory[student.name]:(fallback?[{date:'Sot',mood:fallback.mood,comment:fallback.comment}]:[]));
+      if(moodHistoryStudent!==student.name){ moodHistoryStudent=student.name; moodHistoryIndex=0; }
+      moodHistoryIndex=Math.max(0,Math.min(moodHistoryIndex,Math.max(0,entries.length-1)));
+      const entry=entries[moodHistoryIndex];
+      const notice=readParentNotice(entry?entry.comment:'');
+      const icon=entry&&parentMoodIcons[entry.mood];
+      document.getElementById('moodLargeEmoji').innerHTML=icon?'<img src="'+icon+'" alt="'+entry.mood+'">':(entry?entry.mood.split(' ')[0]:'—');
+      document.getElementById('moodDate').textContent=entry?(entry.date==='Sot'?'Sot':new Intl.DateTimeFormat('sq-AL',{dateStyle:'long'}).format(new Date(entry.date))):'Sot';
+      document.getElementById('moodParentComment').textContent=entry?(notice.general||'Prindi nuk ka lënë koment për të gjithë mësimdhënësit.'):'Nuk ka njoftim nga prindi ende.';
+      const specificBox=document.getElementById('teacherSpecificParentCommentBox');
+      const showSpecific=Boolean(entry&&notice.specific&&notice.subject===activeSubject);
+      specificBox.classList.toggle('hidden',!showSpecific);
+      if(showSpecific){
+        document.getElementById('teacherSpecificParentCommentTitle').textContent='Koment vetëm për '+activeSubject;
+        document.getElementById('teacherSpecificParentComment').textContent=notice.specific;
+      }
+      document.getElementById('moodPrevious').disabled=!entries.length||moodHistoryIndex>=entries.length-1;
+      document.getElementById('moodNext').disabled=!entries.length||moodHistoryIndex===0;
+    }
+    function renderTeacherMoodHistory(){ const box=document.getElementById('teacherMoodHistoryList'); const student=storedStudents[activeStudent]; const entries=student?(moodHistory[student.name]||[]):[]; box.innerHTML=''; if(!entries.length){ box.innerHTML='<p class="small muted">Nuk ka njoftime të mëparshme nga prindi.</p>'; return; } entries.forEach(entry=>{ const row=document.createElement('article'); row.className='teacher-mood-history-item'; const date=entry.date==='Sot'?'Sot':new Intl.DateTimeFormat('sq-AL',{dateStyle:'medium'}).format(new Date(entry.date)); const comments=noticeHistoryMarkup(entry.comment,activeSubject)||'<p class="small muted">Pa koment shtesë për këtë mësimdhënës.</p>'; row.innerHTML='<span class="mood-history-icon">'+escapeHtml(entry.mood.split(' ')[0])+'</span><div><strong>'+escapeHtml(date)+' · '+escapeHtml(entry.mood.substring(entry.mood.indexOf(' ')+1))+'</strong><div class="history-comment-block small">'+comments+'</div></div>'; box.appendChild(row); }); }
     function activeChapters(){ if(!chaptersBySubject[activeSubject]) chaptersBySubject[activeSubject]=[]; return chaptersBySubject[activeSubject]; }
     function supportMethod(){ const profile=document.getElementById('supportTitle').textContent.toLowerCase(); const preference=document.getElementById('preferenceLabel').textContent.toLowerCase(); if(profile.includes('shikim')) return 'Përdorni udhëzime të lexuara me zë, tekst të madh dhe hapa të shkurtër.'; if(profile.includes('dëgjim')) return 'Përdorni udhëzime të shkruara, shembuj pamorë dhe video me titra.'; if(profile.includes('vëmendje')) return 'Ndajeni aktivitetin në hapa të vegjël dhe jepni një pauzë të shkurtër mes tyre.'; if(preference.includes('vizatim')) return 'Përdorni skica dhe paraqitje me ngjyra për ta shpjeguar konceptin.'; if(preference.includes('praktikë')) return 'Jepni një detyrë praktike të shkurtër me shembuj nga jeta e përditshme.'; if(preference.includes('lexim')) return 'Përdorni tekst të shkurtër me fjalë kyçe të theksuara dhe pyetje kuptimore.'; if(preference.includes('dëgjim')) return 'Përdorni audio të shkurtër, pauza të qarta dhe ritëm të përshtatshëm.'; if(preference.includes('lëvizje')) return 'Ndërthurni detyrën me stacione të shkurtra dhe aktivitet fizik të drejtuar.'; if(preference.includes('bashkëpunim')) return 'Përdorni punë në çift ose grup të vogël me role të përcaktuara.'; return 'Jepni një fletë pune të shkurtër dhe kërkoni një përgjigje të shkruar me hapa të qartë.'; }
     function renderResult(chapters){ const average=document.getElementById('resultAverage'); const summary=document.getElementById('resultSummary'); const list=document.getElementById('supportingChapters'); list.innerHTML=''; if(!chapters.length){ average.textContent='Pa të dhëna'; summary.textContent='Nuk ka kapituj të regjistruar ende për këtë lëndë.'; return; } const low=chapters.filter(chapter=>chapter.score<4); const mean=chapters.reduce((total,chapter)=>total+chapter.score,0)/chapters.length; average.textContent=mean.toFixed(1).replace('.',',')+' / 5'; summary.textContent=low.length ? low.length+' kapituj kërkojnë mbështetje në '+activeSubject+'.' : 'Të gjithë kapitujt e regjistruar janë në objektiv.'; low.forEach(chapter=>{ const row=document.createElement('div'); row.className='supporting-chapter'; const name=document.createElement('strong'); name.textContent=chapter.name; const score=document.createElement('strong'); score.textContent=chapter.score.toFixed(1).replace('.',',')+' / 5'; const note=document.createElement('p'); note.textContent='Mbështetje: '+supportMethod(); row.append(name,score,note); list.appendChild(row); }); }
@@ -570,16 +625,137 @@
     buildTodayWorkspace();
     const teacherMoodCalendar=document.createElement('aside'); teacherMoodCalendar.id='teacherMoodCalendar'; teacherMoodCalendar.setAttribute('aria-label','Historiku i humorit'); document.getElementById('teacherApp').appendChild(teacherMoodCalendar);
     function renderTeacherMoodCalendar(){ const box=document.getElementById('teacherMoodCalendar'); const student=storedStudents[activeStudent]; const entries=student?(moodHistory[student.name]||[]):[]; const reference=entries[0] ? new Date(entries[0].date+'T12:00:00') : new Date(); const year=reference.getFullYear(); const month=reference.getMonth(); const months=['Janar','Shkurt','Mars','Prill','Maj','Qershor','Korrik','Gusht','Shtator','Tetor','Nëntor','Dhjetor']; const weekdays=['Di','Hë','Ma','Më','En','Pr','Sh']; const firstDay=new Date(year,month,1).getDay(); const totalDays=new Date(year,month+1,0).getDate(); const moodsByDay=Object.fromEntries(entries.filter(entry=>{const date=new Date(entry.date+'T12:00:00'); return date.getFullYear()===year&&date.getMonth()===month;}).map(entry=>[new Date(entry.date+'T12:00:00').getDate(),entry])); let calendar=weekdays.map(day=>'<span class="history-day-label">'+day+'</span>').join(''); for(let i=0;i<firstDay;i++) calendar+='<span class="history-day empty">·</span>'; for(let day=1;day<=totalDays;day++){ const item=moodsByDay[day]; const display=item ? item.mood.split(' ')[0] : day; const label=item ? 'Dita '+day+': '+item.mood : 'Dita '+day+', pa njoftim'; calendar+='<span class="history-day'+(item?'':' empty')+'" aria-label="'+label+'">'+display+'</span>'; } const comments=entries.filter(entry=>entry.comment).map(entry=>{const date=new Date(entry.date+'T12:00:00'); return '<article class="parent-history-item"><strong>'+months[date.getMonth()]+' '+date.getDate()+'</strong><p class="small">'+entry.comment+'</p></article>';}).join('') || '<p class="small muted">Nuk ka komente shtesë për këtë muaj.</p>'; box.innerHTML='<div class="history-panel-head"><div><p class="small muted">Historiku</p><h2>'+months[month]+' '+year+'</h2></div><button class="history-close" type="button" data-close-teacher-history aria-label="Mbyll historikun">×</button></div><div class="history-calendar" aria-label="Kalendari i humorit">'+calendar+'</div><h3 class="history-summary">Përmbledhja e komenteve mujore</h3><div class="history-entry-list">'+comments+'</div>'; box.querySelector('[data-close-teacher-history]').onclick=()=>{box.classList.remove('show');document.getElementById('teacherMoodHistory').setAttribute('aria-expanded','false');}; }
+    function renderParentMoodHistory(){
+      const box=document.getElementById('parentMoodHistory');
+      const entries=parentActiveStudent?(moodHistory[parentActiveStudent.name]||[]):[];
+      const reference=entries[0]?new Date(entries[0].date+'T12:00:00'):new Date();
+      const year=reference.getFullYear();
+      const month=reference.getMonth();
+      const months=['Janar','Shkurt','Mars','Prill','Maj','Qershor','Korrik','Gusht','Shtator','Tetor','Nëntor','Dhjetor'];
+      const weekdays=['Di','Hë','Ma','Më','En','Pr','Sh'];
+      const firstDay=new Date(year,month,1).getDay();
+      const totalDays=new Date(year,month+1,0).getDate();
+      const moodsByDay=Object.fromEntries(entries.filter(entry=>{const date=new Date(entry.date+'T12:00:00');return date.getFullYear()===year&&date.getMonth()===month;}).map(entry=>[new Date(entry.date+'T12:00:00').getDate(),entry]));
+      let calendar=weekdays.map(day=>'<span class="history-day-label">'+day+'</span>').join('');
+      for(let i=0;i<firstDay;i++) calendar+='<span class="history-day empty">·</span>';
+      for(let day=1;day<=totalDays;day++){
+        const item=moodsByDay[day];
+        const display=item?escapeHtml(item.mood.split(' ')[0]):day;
+        const label=item?'Dita '+day+': '+item.mood:'Dita '+day+', pa njoftim';
+        calendar+='<span class="history-day'+(item?'':' empty')+'" aria-label="'+escapeHtml(label)+'">'+display+'</span>';
+      }
+      const comments=entries.map(entry=>{ const markup=noticeHistoryMarkup(entry.comment); if(!markup) return ''; const date=new Date(entry.date+'T12:00:00'); return '<article class="parent-history-item"><strong>'+months[date.getMonth()]+' '+date.getDate()+'</strong><div class="history-comment-block small">'+markup+'</div></article>'; }).filter(Boolean).join('')||'<p class="small muted">Nuk ka komente shtesë për këtë muaj.</p>';
+      box.innerHTML='<div class="history-panel-head"><div><p class="small muted">Historiku</p><h2>'+months[month]+' '+year+'</h2></div><button class="history-close" type="button" data-close-history aria-label="Mbyll historikun">×</button></div><div class="history-calendar" aria-label="Kalendari i humorit">'+calendar+'</div><h3 class="history-summary">Përmbledhja e komenteve mujore</h3><div class="history-entry-list">'+comments+'</div>';
+      box.querySelector('[data-close-history]').onclick=()=>{box.classList.remove('show');document.getElementById('parentHistoryToggle').setAttribute('aria-expanded','false');};
+    }
+    function renderTeacherMoodCalendar(){
+      const box=document.getElementById('teacherMoodCalendar');
+      const student=storedStudents[activeStudent];
+      const entries=student?(moodHistory[student.name]||[]):[];
+      const reference=entries[0]?new Date(entries[0].date+'T12:00:00'):new Date();
+      const year=reference.getFullYear();
+      const month=reference.getMonth();
+      const months=['Janar','Shkurt','Mars','Prill','Maj','Qershor','Korrik','Gusht','Shtator','Tetor','Nëntor','Dhjetor'];
+      const weekdays=['Di','Hë','Ma','Më','En','Pr','Sh'];
+      const firstDay=new Date(year,month,1).getDay();
+      const totalDays=new Date(year,month+1,0).getDate();
+      const moodsByDay=Object.fromEntries(entries.filter(entry=>{const date=new Date(entry.date+'T12:00:00');return date.getFullYear()===year&&date.getMonth()===month;}).map(entry=>[new Date(entry.date+'T12:00:00').getDate(),entry]));
+      let calendar=weekdays.map(day=>'<span class="history-day-label">'+day+'</span>').join('');
+      for(let i=0;i<firstDay;i++) calendar+='<span class="history-day empty">·</span>';
+      for(let day=1;day<=totalDays;day++){
+        const item=moodsByDay[day];
+        const display=item?escapeHtml(item.mood.split(' ')[0]):day;
+        const label=item?'Dita '+day+': '+item.mood:'Dita '+day+', pa njoftim';
+        calendar+='<span class="history-day'+(item?'':' empty')+'" aria-label="'+escapeHtml(label)+'">'+display+'</span>';
+      }
+      const comments=entries.map(entry=>{ const markup=noticeHistoryMarkup(entry.comment,activeSubject); if(!markup) return ''; const date=new Date(entry.date+'T12:00:00'); return '<article class="parent-history-item"><strong>'+months[date.getMonth()]+' '+date.getDate()+'</strong><div class="history-comment-block small">'+markup+'</div></article>'; }).filter(Boolean).join('')||'<p class="small muted">Nuk ka komente për këtë mësimdhënës gjatë këtij muaji.</p>';
+      box.innerHTML='<div class="history-panel-head"><div><p class="small muted">Historiku</p><h2>'+months[month]+' '+year+'</h2></div><button class="history-close" type="button" data-close-teacher-history aria-label="Mbyll historikun">×</button></div><div class="history-calendar" aria-label="Kalendari i humorit">'+calendar+'</div><h3 class="history-summary">Përmbledhja e komenteve mujore</h3><div class="history-entry-list">'+comments+'</div>';
+      box.querySelector('[data-close-teacher-history]').onclick=()=>{box.classList.remove('show');document.getElementById('teacherMoodHistory').setAttribute('aria-expanded','false');};
+    }
     const teacherNotices=JSON.parse(localStorage.getItem('mlq-teacher-notices-v1')||'{}');
     function renderParentTeacherNotice(){ const box=document.getElementById('parentTeacherNotice'); if(!box||!parentActiveStudent) return; const notice=teacherNotices[parentActiveStudent.name]; box.innerHTML=notice?'<div class="resource-top"><div class="notice-icon">📨</div><div><h2>Njoftim nga mësimdhënësi – sot</h2><p class="small muted">'+notice+'</p></div></div>':'<div class="resource-top"><div class="notice-icon">📨</div><div><h2>Njoftim nga mësimdhënësi – sot</h2><p class="small muted">Nuk ka njoftim të ri nga mësimdhënësi.</p></div></div>'; }
     function buildTeacherParentNotice(){ const main=document.querySelector('#appPhone main'); const card=document.createElement('section'); card.className='card teacher-parent-notice compact-hidden'; card.id='teacherParentNotice'; card.innerHTML='<div class="section-head"><div><h2>Njoftim për prindin</h2><p class="small muted">Dërgoni informacion të nevojshëm për prindin.</p></div><span class="badge">Sot</span></div><textarea id="teacherNoticeInput" placeholder="P.sh. Sot ka punuar me hapa të shkurtër dhe i ka përfunduar dy ushtrimet e para."></textarea><button class="btn primary" id="saveTeacherNotice" style="margin-top:10px">Dërgo njoftimin</button><p class="task-status" id="teacherNoticeStatus"></p>'; main.appendChild(card); document.getElementById('saveTeacherNotice').onclick=()=>{ const student=storedStudents[activeStudent]; const notice=document.getElementById('teacherNoticeInput').value.trim(); if(!student||!notice) return; teacherNotices[student.name]=notice; localStorage.setItem('mlq-teacher-notices-v1',JSON.stringify(teacherNotices)); document.getElementById('teacherNoticeStatus').textContent='✓ Njoftimi u ruajt për prindin.'; renderParentTeacherNotice(); }; }
     function buildParentTeacherNotice(){ const panel=document.getElementById('parentTodayPanel'); const card=document.createElement('section'); card.className='card parent-teacher-notice'; card.id='parentTeacherNotice'; panel.appendChild(card); }
+    function enhanceParentCommentRouting(){
+      const card=document.querySelector('.parent-comment-card');
+      const saveButton=document.getElementById('saveParentMood');
+      const existingLabel=card.querySelector('label');
+      card.querySelector('h2').textContent='Njoftime për mësimdhënësit';
+      const intro=document.createElement('p');
+      intro.className='small muted';
+      intro.textContent='Dërgoni një koment për të gjithë ose një mesazh shtesë vetëm për mësimdhënësin e një lënde.';
+      card.querySelector('h2').after(intro);
+
+      const general=document.createElement('section');
+      general.className='parent-comment-group';
+      general.innerHTML='<span class="comment-audience">Të gjithë mësimdhënësit</span><h3>Koment shtesë për të gjithë mësimdhënësit</h3><p class="small muted">Ky njoftim shfaqet te çdo mësimdhënës i nxënësit.</p>';
+      existingLabel.style.marginTop='0';
+      general.appendChild(existingLabel);
+
+      const targeted=document.createElement('section');
+      targeted.className='parent-comment-group targeted';
+      targeted.innerHTML='<span class="comment-audience">Mësimdhënës i caktuar</span><h3>Koment shtesë për mësimdhënës të caktuar</h3><p class="small muted">Zgjidhni lëndën dhe shkruani njoftimin që duhet ta shohë vetëm ai mësimdhënës.</p><label><span>Lënda</span><select id="parentCommentSubject" aria-label="Zgjidhni lëndën për komentin specifik"></select></label><label><span>Komenti specifik</span><textarea id="parentSubjectComment" placeholder="P.sh. Sot ka dëshirë të lexojë me zë; ju lutem përfshijeni në aktivitetin e Gjuhës shqipe."></textarea></label>';
+      const subjectSelect=targeted.querySelector('select');
+      subjects.forEach(subject=>{ const option=document.createElement('option'); option.value=subject; option.textContent=subject; subjectSelect.appendChild(option); });
+      card.insertBefore(general,saveButton);
+      card.insertBefore(targeted,saveButton);
+    }
+    function enhanceTeacherMoodNotices(){
+      const comment=document.getElementById('moodParentComment');
+      const wrapper=document.createElement('div');
+      wrapper.className='teacher-parent-comments';
+      const general=document.createElement('article');
+      general.className='teacher-parent-comment';
+      const generalLabel=document.createElement('strong');
+      generalLabel.textContent='Koment për të gjithë mësimdhënësit';
+      comment.parentNode.insertBefore(wrapper,comment);
+      general.append(generalLabel,comment);
+      const specific=document.createElement('article');
+      specific.className='teacher-parent-comment specific hidden';
+      specific.id='teacherSpecificParentCommentBox';
+      specific.innerHTML='<strong id="teacherSpecificParentCommentTitle">Koment për lëndën</strong><p id="teacherSpecificParentComment"></p>';
+      wrapper.append(general,specific);
+    }
     function buildParentTrendCard(){ const panel=document.getElementById('parentResultsPanel'); const card=document.createElement('section'); card.className='card parent-progress-card'; card.innerHTML='<div class="section-head"><div><h2>Ngritjet dhe uljet</h2><p class="small muted">Tendenca për secilën lëndë.</p></div><span class="badge">Progresi</span></div><div class="parent-trend-list" id="parentSubjectTrends"></div>'; panel.appendChild(card); }
     function renderParentSubjectTrends(){ const box=document.getElementById('parentSubjectTrends'); if(!box) return; const averages=Object.fromEntries(parentSubjectAverages.map(item=>[item.name,item.average])); box.innerHTML=''; subjects.forEach(name=>{ const value=averages[name]; const row=document.createElement('div'); row.className='parent-trend-row'; if(value===undefined){ row.innerHTML='<strong>'+name+'</strong><span class="small muted">Pa të dhëna</span><div class="parent-trend-track"><div class="parent-trend-fill" style="width:0"></div></div>'; } else { const strong=value>=4; const label=strong?'↑ Ngritje e qëndrueshme':'↓ Kërkon përforcim'; row.innerHTML='<strong>'+name+'</strong><span class="'+(strong?'parent-trend-up':'parent-trend-watch')+'">'+label+'</span><div class="parent-trend-track"><div class="parent-trend-fill '+(strong?'':'watch')+'" style="width:'+(value*20)+'%"></div></div>'; } box.appendChild(row); }); }
     function buildStudentPiaCard(){ const history=document.querySelector('.history.students-only'); const previousPia=history.querySelectorAll('.history-row')[1]; if(previousPia) previousPia.style.display='none'; const card=document.createElement('button'); card.type='button'; card.className='student-pia-card'; card.setAttribute('aria-label','Hap Planin Individual Arsimor të Erës'); card.innerHTML='<div class="section-head"><span><strong>📁 Plani Individual Arsimor</strong><br><span class="small muted">PIA · Era Kola</span></span><span class="badge">PIA</span></div><div class="pia-fields-compact"><div><span class="small muted">Objektivi</span><div class="pia-empty">—</div></div><div><span class="small muted">Përshtatja</span><div class="pia-empty">—</div></div><div><span class="small muted">Matja</span><div class="pia-empty">—</div></div></div><span class="student-pia-open">Klikoni për të hapur PIA-n</span>'; card.onclick=()=>window.open('plani_individual_i_arsimit.pdf','_blank','noopener'); history.insertBefore(card,history.querySelector('.lock-note')); }
     buildStudentPiaCard();
     buildTeacherParentNotice();
     buildParentTeacherNotice();
+    enhanceParentCommentRouting();
+    enhanceTeacherMoodNotices();
+    const showParentDashboardBase=showParentDashboard;
+    showParentDashboard=function(student){
+      showParentDashboardBase(student);
+      const note=dailyMoods[student.name];
+      const notice=readParentNotice(note?note.comment:'');
+      document.getElementById('parentMoodComment').value=notice.general;
+      document.getElementById('parentCommentSubject').value=subjects.includes(notice.subject)?notice.subject:subjects[0];
+      document.getElementById('parentSubjectComment').value=notice.specific;
+    };
+    document.getElementById('saveParentMood').onclick=async()=>{
+      if(!parentActiveStudent) return;
+      const general=document.getElementById('parentMoodComment').value.trim();
+      const subject=document.getElementById('parentCommentSubject').value;
+      const specific=document.getElementById('parentSubjectComment').value.trim();
+      const storedComment=writeParentNotice(general,subject,specific);
+      const reportedOn=new Date().toISOString().slice(0,10);
+      const status=document.getElementById('parentMoodStatus');
+      const saveButton=document.getElementById('saveParentMood');
+      saveButton.disabled=true;
+      status.textContent='Duke dërguar njoftimet…';
+      const result=await supabaseClient.from('daily_moods').upsert({student_id:parentActiveStudent.id,mood:parentSelectedMood,parent_comment:storedComment,reported_on:reportedOn},{onConflict:'student_id,reported_on'});
+      saveButton.disabled=false;
+      if(result.error){ status.textContent='Njoftimi nuk u ruajt: '+result.error.message; return; }
+      const name=parentActiveStudent.name;
+      dailyMoods[name]={mood:parentSelectedMood,comment:storedComment};
+      moodHistory[name]=[{date:reportedOn,mood:parentSelectedMood,comment:storedComment},...(moodHistory[name]||[]).filter(entry=>entry.date!==reportedOn)];
+      localStorage.setItem('mlq-daily-moods',JSON.stringify(dailyMoods));
+      localStorage.setItem('mlq-mood-history',JSON.stringify(moodHistory));
+      status.textContent=specific?'✓ Komenti i përgjithshëm iu dërgua të gjithëve; komenti specifik vetëm mësimdhënësit të '+subject+'.':'✓ Komenti i përgjithshëm iu dërgua të gjithë mësimdhënësve.';
+      renderParentMoodHistory();
+      renderDailyMoods();
+    };
     buildParentTrendCard();
     document.getElementById('parentResultsTab').addEventListener('click',renderParentSubjectTrends);
     renderStudents(); renderEvaluationFolders(); renderDailyMoods(); renderChapters(); updateResource();

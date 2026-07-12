@@ -32,6 +32,7 @@ Connect the phone and computer to the same Wi-Fi, then run the script above. In 
 - Identification of chapters below the target grade, with tailored support ideas.
 - Accessibility adaptations including read-aloud support and visual or written alternatives.
 - An Albanian pedagogical-support assistant for teacher discussions.
+- Parent mood notices with a general comment for all teachers and an optional subject-specific comment shown only in the selected teacher's subject view.
 
 The prototype keeps its demonstration data in the browser’s local storage.
 
@@ -39,6 +40,7 @@ The prototype keeps its demonstration data in the browser’s local storage.
 
 ### 2026-07-12
 
+- Split the parent's daily comment into two routed notices: a general comment delivered to every teacher and an optional subject-specific comment selected from the 12-subject list. Teacher mood views and histories always show the general message and reveal the specific message only when it matches the logged-in teacher's subject.
 - Connected only the teacher's **Mbështetja** chat to the OpenAI Responses API. Each **Dërgo** action now generates a new Albanian response from the teacher's exact situation, with possible causes, three immediate classroom actions and a short observation cue.
 - Added a server-side API proxy so the OpenAI key stays in PowerShell rather than being exposed in the browser, plus loading, error and retry-ready states in the chat.
 - Limited the AI request to the text typed in **Mbështetja** and documented privacy precautions for pupil data.
